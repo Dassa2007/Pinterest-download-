@@ -51,7 +51,6 @@
             border-radius: 8px;
             outline: none;
             font-size: 14px;
-            transition: border-color 0.3s;
         }
         input[type="text"]:focus {
             border-color: #e60023;
@@ -93,7 +92,7 @@
             margin-top: 10px;
             background-color: #28a745;
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 6px;
             text-decoration: none;
             font-weight: bold;
@@ -111,42 +110,62 @@
         
         <div class="input-group">
             <input type="text" id="urlInput" placeholder="https://www.pinterest.com/pin/...">
-            <button id="downloadBtn" onclick="processDownload()">Download Video</button>
+            <button onclick="processDownload()">Download Video</button>
         </div>
 
         <div id="result"></div>
     </div>
 
     <script>
-        function processDownload() {
+        async function processDownload() {
             const urlInput = document.getElementById('urlInput').value.trim();
             const resultDiv = document.getElementById('result');
 
-            // දෝෂ පාලනය (Error Handling) - ලින්ක් එක හිස් නම්
             if (urlInput === "") {
                 resultDiv.innerHTML = `<div class="error">Please paste a valid Pinterest link first!</div>`;
                 return;
             }
 
-            // ලින්ක් එක Pinterest එකට අයත් දැයි පරීක්ෂා කිරීම
             if (!urlInput.includes('pinterest.com') && !urlInput.includes('pin.it')) {
                 resultDiv.innerHTML = `<div class="error">Invalid Pinterest link! Please check the URL.</div>`;
                 return;
             }
 
-            resultDiv.innerHTML = `<p style="color: #007bff;">Processing your video, please wait...</p>`;
+            resultDiv.innerHTML = `<p style="color: #007bff;">Fetching video, please wait...</p>`;
 
-            // සටහන: බ්‍රව්සරයේ සිටම Pinterest වීඩියෝ ඩිරෙක්ට් ලබාගැනීමට CORS ප්‍රතිපත්ති බාධා කරන නිසා, 
-            // මෙහිදී පරිශීලකයාට පහසුවෙන් ඩවුන්ලෝඩ් කරගත හැකි ආරක්ෂිත ක්‍රමයක් සකසා ඇත.
-            setTimeout(() => {
+            try {
+                // නොමිලේ ක්‍රියාත්මක වන Public API එකක් හරහා දත්ත ලබා ගැනීම
+                const apiUrl = `https://api.giftedtech.my.id/api/download/pinterest?url=${encodeURIComponent(urlInput)}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data && (data.result?.video || data.data?.video)) {
+                    const videoUrl = data.result?.video || data.data?.video;
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <p>Video ready to download!</p>
+                            <a href="${videoUrl}" target="_blank" class="download-btn" download>Download MP4</a>
+                        </div>
+                    `;
+                } else {
+                    // API එකෙන් ලින්ක් එක ලබාගැනීමට නොහැකි වූ විට සෘජුව විවෘත වන විකල්ප ක්‍රමය
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <p>Click below to access your video:</p>
+                            <a href="${urlInput}" target="_blank" class="download-btn">Open Pinterest Link</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="success">
-                        <p>Video processed successfully!</p>
-                        <a href="${urlInput}" target="_blank" class="download-btn">Get Video / Open Link</a>
+                        <p>Click below to download your video:</p>
+                        <a href="${urlInput}" target="_blank" class="download-btn">Open Video Page</a>
                     </div>
                 `;
-            }, 1500);
+            }
         }
     </script>
 </body>
 </html>
+
