@@ -1,171 +1,265 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinterest Video Downloader</title>
+    <title>DG DOWNLOADER - Pinterest Video Downloader</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
             min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-        h2 {
-            color: #e60023;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .input-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            justify-content: space-between;
         }
-        input[type="text"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            font-size: 14px;
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 90%;
         }
-        input[type="text"]:focus {
-            border-color: #e60023;
+
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #e60023;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        button {
-            background-color: #e60023;
-            color: white;
+
+        .logo h1 span {
+            color: #fff;
+        }
+
+        .logo p {
+            color: #ddd;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px 20px;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            outline: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .input-group button {
+            padding: 0 25px;
+            border: none;
+            outline: none;
+            background: #e60023;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: 0.3s;
+            font-size: 1rem;
         }
-        button:hover {
-            background-color: #ad081b;
+
+        .input-group button:hover {
+            background: #ad081b;
+            transform: translateY(-2px);
         }
-        #result {
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #e60023;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Result Section */
+        .result-box {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
             margin-top: 20px;
-            font-size: 14px;
+            text-align: left;
+            animation: fadeIn 0.5s ease-in-out;
         }
-        .error {
-            color: #d9534f;
-            background: #fdf7f7;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #f5c6cb;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .success {
-            color: #28a745;
-            background: #f4fbf7;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #c3e6cb;
+
+        .result-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #ffcccb;
         }
+
         .download-btn {
-            display: inline-block;
-            margin-top: 10px;
-            background-color: #28a745;
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
             color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
+            text-align: center;
             text-decoration: none;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: 0.3s;
         }
+
         .download-btn:hover {
-            background-color: #218838;
+            background: #218838;
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            margin-top: 15px;
+            font-weight: 500;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 576px) {
+            .input-group {
+                flex-direction: column;
+            }
+            .input-group button {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Pinterest Downloader</h2>
-        <p>Paste your Pinterest video link below</p>
-        
-        <div class="input-group">
-            <input type="text" id="urlInput" placeholder="https://www.pinterest.com/pin/...">
-            <button onclick="processDownload()">Download Video</button>
+        <div class="logo">
+            <h1>DG <span>DOWNLOADER</span></h1>
+            <p>Paste your Pinterest video link below and download instantly!</p>
         </div>
 
-        <div id="result"></div>
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Paste Pinterest link here (e.g., https://pin.it/...)">
+            <button onclick="downloadVideo()">
+                <i class="fa-solid fa-download"></i> Download
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching video...</p>
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
+
+        <div class="result-box" id="resultBox">
+            <h3><i class="fa-solid fa-circle-check" style="color: #28a745;"></i> Video Found Successfully!</h3>
+            <div id="downloadLinks"></div>
+        </div>
     </div>
 
+    <footer>
+        <p>&copy; 2026 DG DOWNLOADER. All Rights Reserved.</p>
+    </footer>
+
     <script>
-        async function processDownload() {
+        const API_KEY = "zanta_JatdaWBTIbi4uSdilQ1q6gE3";
+
+        async function downloadVideo() {
             const urlInput = document.getElementById('urlInput').value.trim();
-            const resultDiv = document.getElementById('result');
+            const loading = document.getElementById('loading');
+            const resultBox = document.getElementById('resultBox');
+            const errorMsg = document.getElementById('errorMsg');
+            const downloadLinks = document.getElementById('downloadLinks');
 
-            if (urlInput === "") {
-                resultDiv.innerHTML = `<div class="error">Please paste a valid Pinterest link first!</div>`;
+            // Reset previous outputs
+            resultBox.style.display = "none";
+            errorMsg.style.display = "none";
+            downloadLinks.innerHTML = "";
+
+            if (!urlInput) {
+                errorMsg.innerText = "Please enter a valid Pinterest URL!";
+                errorMsg.style.display = "block";
                 return;
             }
 
-            if (!urlInput.includes('pinterest.com') && !urlInput.includes('pin.it')) {
-                resultDiv.innerHTML = `<div class="error">Invalid Pinterest link! Please check the URL.</div>`;
-                return;
-            }
-
-            resultDiv.innerHTML = `<p style="color: #007bff;">Fetching video, please wait...</p>`;
+            loading.style.display = "block";
 
             try {
-                // නොමිලේ ක්‍රියාත්මක වන Public API එකක් හරහා දත්ත ලබා ගැනීම
-                const apiUrl = `https://api.giftedtech.my.id/api/download/pinterest?url=${encodeURIComponent(urlInput)}`;
-                const response = await fetch(apiUrl);
+                const apiURL = `https://api.zanta-mini.store/api/pinterest?apiKey=${API_KEY}&url=${encodeURIComponent(urlInput)}`;
+                const response = await fetch(apiURL);
                 const data = await response.json();
 
-                if (data && (data.result?.video || data.data?.video)) {
-                    const videoUrl = data.result?.video || data.data?.video;
-                    resultDiv.innerHTML = `
-                        <div class="success">
-                            <p>Video ready to download!</p>
-                            <a href="${videoUrl}" target="_blank" class="download-btn" download>Download MP4</a>
-                        </div>
+                loading.style.display = "none";
+
+                if (data && (data.url || data.video || data.download || data.result)) {
+                    // Adapt to common API JSON response formats
+                    // Usually API returns video URL inside data.url or data.result
+                    const videoUrl = data.url || data.video || data.download || data.result;
+
+                    downloadLinks.innerHTML = `
+                        <a href="${videoUrl}" class="download-btn" target="_blank" download>
+                            <i class="fa-solid fa-download"></i> Download Video (HD)
+                        </a>
                     `;
+                    resultBox.style.display = "block";
                 } else {
-                    // API එකෙන් ලින්ක් එක ලබාගැනීමට නොහැකි වූ විට සෘජුව විවෘත වන විකල්ප ක්‍රමය
-                    resultDiv.innerHTML = `
-                        <div class="success">
-                            <p>Click below to access your video:</p>
-                            <a href="${urlInput}" target="_blank" class="download-btn">Open Pinterest Link</a>
-                        </div>
-                    `;
+                    errorMsg.innerText = "Could not fetch video. Please check the link and try again.";
+                    errorMsg.style.display = "block";
                 }
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="success">
-                        <p>Click below to download your video:</p>
-                        <a href="${urlInput}" target="_blank" class="download-btn">Open Video Page</a>
-                    </div>
-                `;
+                loading.style.display = "none";
+                errorMsg.innerText = "An error occurred while connecting to the server.";
+                errorMsg.style.display = "block";
             }
         }
     </script>
 </body>
 </html>
-
