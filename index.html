@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DG DOWNLOADER - Pinterest Video Downloader</title>
-    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -43,7 +42,6 @@
             color: #e60023;
             margin-bottom: 10px;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .logo h1 span {
@@ -91,7 +89,6 @@
             transform: translateY(-2px);
         }
 
-        /* Loading Spinner */
         .loading {
             display: none;
             margin: 20px 0;
@@ -112,7 +109,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Result Section */
         .result-box {
             display: none;
             background: rgba(0, 0, 0, 0.3);
@@ -120,18 +116,6 @@
             border-radius: 12px;
             margin-top: 20px;
             text-align: left;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-box h3 {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: #ffcccb;
         }
 
         .download-btn {
@@ -186,7 +170,7 @@
         </div>
 
         <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Paste Pinterest link here (e.g., https://pin.it/...)">
+            <input type="text" id="urlInput" placeholder="Paste Pinterest link here...">
             <button onclick="downloadVideo()">
                 <i class="fa-solid fa-download"></i> Download
             </button>
@@ -219,7 +203,6 @@
             const errorMsg = document.getElementById('errorMsg');
             const downloadLinks = document.getElementById('downloadLinks');
 
-            // Reset previous outputs
             resultBox.style.display = "none";
             errorMsg.style.display = "none";
             downloadLinks.innerHTML = "";
@@ -233,17 +216,25 @@
             loading.style.display = "block";
 
             try {
-                const apiURL = `https://api.zanta-mini.store/api/pinterest?apiKey=${API_KEY}&url=${encodeURIComponent(urlInput)}`;
-                const response = await fetch(apiURL);
-                const data = await response.json();
+                const targetAPI = `https://api.zanta-mini.store/api/pinterest?apiKey=${API_KEY}&url=${encodeURIComponent(urlInput)}`;
+                // Using allorigins cors proxy to bypass browser restrictions
+                const proxyURL = `https://api.allorigins.win/get?url=${encodeURIComponent(targetAPI)}`;
+                
+                const response = await fetch(proxyURL);
+                const proxyData = await response.json();
+                
+                if (!proxyData.contents) {
+                    throw new Error("Failed to connect to API");
+                }
+
+                const data = JSON.parse(proxyData.contents);
 
                 loading.style.display = "none";
 
-                if (data && (data.url || data.video || data.download || data.result)) {
-                    // Adapt to common API JSON response formats
-                    // Usually API returns video URL inside data.url or data.result
-                    const videoUrl = data.url || data.video || data.download || data.result;
+                // Check possible JSON keys returned by the API
+                const videoUrl = data.url || data.video || data.download || data.result || (data.data && data.data.url);
 
+                if (videoUrl) {
                     downloadLinks.innerHTML = `
                         <a href="${videoUrl}" class="download-btn" target="_blank" download>
                             <i class="fa-solid fa-download"></i> Download Video (HD)
@@ -251,12 +242,12 @@
                     `;
                     resultBox.style.display = "block";
                 } else {
-                    errorMsg.innerText = "Could not fetch video. Please check the link and try again.";
+                    errorMsg.innerText = data.message || "Could not fetch video. Please check the link.";
                     errorMsg.style.display = "block";
                 }
             } catch (error) {
                 loading.style.display = "none";
-                errorMsg.innerText = "An error occurred while connecting to the server.";
+                errorMsg.innerText = "An error occurred while connecting to the server. Try again!";
                 errorMsg.style.display = "block";
             }
         }
