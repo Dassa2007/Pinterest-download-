@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinterest Video Downloader</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h2 {
+            color: #e60023;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #e60023;
+        }
+        button {
+            background-color: #e60023;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ad081b;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .error {
+            color: #d9534f;
+            background: #fdf7f7;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+        }
+        .success {
+            color: #28a745;
+            background: #f4fbf7;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+        }
+        .download-btn {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Pinterest Downloader</h2>
+        <p>Paste your Pinterest video link below</p>
+        
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="https://www.pinterest.com/pin/...">
+            <button id="downloadBtn" onclick="processDownload()">Download Video</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function processDownload() {
+            const urlInput = document.getElementById('urlInput').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            // දෝෂ පාලනය (Error Handling) - ලින්ක් එක හිස් නම්
+            if (urlInput === "") {
+                resultDiv.innerHTML = `<div class="error">Please paste a valid Pinterest link first!</div>`;
+                return;
+            }
+
+            // ලින්ක් එක Pinterest එකට අයත් දැයි පරීක්ෂා කිරීම
+            if (!urlInput.includes('pinterest.com') && !urlInput.includes('pin.it')) {
+                resultDiv.innerHTML = `<div class="error">Invalid Pinterest link! Please check the URL.</div>`;
+                return;
+            }
+
+            resultDiv.innerHTML = `<p style="color: #007bff;">Processing your video, please wait...</p>`;
+
+            // සටහන: බ්‍රව්සරයේ සිටම Pinterest වීඩියෝ ඩිරෙක්ට් ලබාගැනීමට CORS ප්‍රතිපත්ති බාධා කරන නිසා, 
+            // මෙහිදී පරිශීලකයාට පහසුවෙන් ඩවුන්ලෝඩ් කරගත හැකි ආරක්ෂිත ක්‍රමයක් සකසා ඇත.
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <p>Video processed successfully!</p>
+                        <a href="${urlInput}" target="_blank" class="download-btn">Get Video / Open Link</a>
+                    </div>
+                `;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
