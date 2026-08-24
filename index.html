@@ -178,7 +178,7 @@
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching Pinterest video...</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching video from API...</p>
         </div>
 
         <div class="error-msg" id="errorMsg"></div>
@@ -214,7 +214,7 @@
             loading.style.display = "block";
 
             try {
-                // New API endpoint
+                // Correctly passing the url parameter to the Dark Shan API endpoint
                 const targetAPI = `https://api-dark-shan-yt.koyeb.app/download/pinterest?url=${encodeURIComponent(urlInput)}`;
                 const proxyURL = `https://api.allorigins.win/get?url=${encodeURIComponent(targetAPI)}`;
                 
@@ -222,14 +222,14 @@
                 const proxyData = await response.json();
                 
                 if (!proxyData.contents) {
-                    throw new Error("Failed to connect to API");
+                    throw new Error("Failed to connect to API server.");
                 }
 
                 const data = JSON.parse(proxyData.contents);
                 loading.style.display = "none";
 
-                // API එකෙන් ලැබෙන data වල url එක ලබා ගැනීම (data.url, data.result හෝ data.data වැනි ඕනෑම එකකට ගැළපෙන පරිදි)
-                const videoUrl = data.url || data.result || data.video || (data.data && (data.data.url || data.data.video));
+                // Extracting download link safely from typical API responses
+                const videoUrl = data.url || data.result || data.download || (data.data && (data.data.url || data.data.video));
 
                 if (videoUrl) {
                     downloadLinks.innerHTML = `
@@ -239,15 +239,16 @@
                     `;
                     resultBox.style.display = "block";
                 } else {
-                    errorMsg.innerText = data.message || "Could not fetch video. Please check the Pinterest link.";
+                    errorMsg.innerText = data.message || "Could not fetch video. Please check if the API link is active.";
                     errorMsg.style.display = "block";
                 }
             } catch (error) {
                 loading.style.display = "none";
-                errorMsg.innerText = "An error occurred while connecting to the server. Try again!";
+                errorMsg.innerText = "Server connection error or API is currently down. Try again later!";
                 errorMsg.style.display = "block";
             }
         }
     </script>
 </body>
 </html>
+
