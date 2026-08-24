@@ -222,10 +222,11 @@
                 loading.style.display = "none";
 
                 if (data.status && data.result) {
+                    // Direct download button triggering blob download
                     downloadLinks.innerHTML = `
-                        <a href="${data.result}" class="download-btn" target="_blank" download>
+                        <button onclick="forceDownload('${data.result}')" class="download-btn" style="border:none; cursor:pointer; width:100%;">
                             <i class="fa-solid fa-download"></i> Download Video (HD)
-                        </a>
+                        </button>
                     `;
                     resultBox.style.display = "block";
                 } else {
@@ -234,8 +235,31 @@
                 }
             } catch (error) {
                 loading.style.display = "none";
-                errorMsg.innerText = "Connection error. (Note: Free Render servers might take 30-50s to wake up on the first click).";
+                errorMsg.innerText = "Connection error. Please try again!";
                 errorMsg.style.display = "block";
+            }
+        }
+
+        // Function to force direct download without opening in a new tab
+        async function forceDownload(videoUrl) {
+            try {
+                const response = await fetch(videoUrl);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = 'pinterest-video.mp4';
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+            } catch (e) {
+                // Fallback if browser blocks blob download
+                window.open(videoUrl, '_blank');
             }
         }
     </script>
