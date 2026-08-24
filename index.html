@@ -118,18 +118,29 @@
             text-align: left;
         }
 
+        .quality-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
         .download-btn {
-            display: block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
-            padding: 12px;
+            padding: 12px 20px;
             background: #28a745;
             color: white;
             text-align: center;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 600;
-            margin-top: 10px;
             transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
         }
 
         .download-btn:hover {
@@ -178,14 +189,14 @@
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching video from your API...</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching video qualities...</p>
         </div>
 
         <div class="error-msg" id="errorMsg"></div>
 
         <div class="result-box" id="resultBox">
-            <h3><i class="fa-solid fa-circle-check" style="color: #28a745;"></i> Video Found Successfully!</h3>
-            <div id="downloadLinks"></div>
+            <h3><i class="fa-solid fa-circle-check" style="color: #28a745;"></i> Select Quality to Download:</h3>
+            <div class="quality-options" id="qualityOptions"></div>
         </div>
     </div>
 
@@ -199,11 +210,11 @@
             const loading = document.getElementById('loading');
             const resultBox = document.getElementById('resultBox');
             const errorMsg = document.getElementById('errorMsg');
-            const downloadLinks = document.getElementById('downloadLinks');
+            const qualityOptions = document.getElementById('qualityOptions');
 
             resultBox.style.display = "none";
             errorMsg.style.display = "none";
-            downloadLinks.innerHTML = "";
+            qualityOptions.innerHTML = "";
 
             if (!urlInput) {
                 errorMsg.innerText = "Please enter a valid Pinterest URL!";
@@ -214,20 +225,25 @@
             loading.style.display = "block";
 
             try {
-                // Requesting video from your custom Render API
                 const apiURL = `https://dg-pinterest-api.onrender.com/api/pinterest?url=${encodeURIComponent(urlInput)}`;
                 const response = await fetch(apiURL);
                 const data = await response.json();
 
                 loading.style.display = "none";
 
-                if (data.status && data.result) {
-                    // Direct download button triggering blob download
-                    downloadLinks.innerHTML = `
-                        <button onclick="forceDownload('${data.result}')" class="download-btn" style="border:none; cursor:pointer; width:100%;">
-                            <i class="fa-solid fa-download"></i> Download Video (HD)
-                        </button>
-                    `;
+                if (data.status && data.qualities) {
+                    let htmlContent = '';
+                    for (const [quality, videoUrl] of Object.entries(data.qualities)) {
+                        // Route through our Render download proxy to force direct file download
+                        const proxyUrl = `https://dg-pinterest-api.onrender.com/api/download-proxy?url=${encodeURIComponent(videoUrl)}`;
+                        htmlContent += `
+                            <a href="${proxyUrl}" class="download-btn" download="DG-Pinterest.mp4">
+                                <span><i class="fa-solid fa-video"></i> ${quality}</span>
+                                <span><i class="fa-solid fa-download"></i> Download</span>
+                            </a>
+                        `;
+                    }
+                    qualityOptions.innerHTML = htmlContent;
                     resultBox.style.display = "block";
                 } else {
                     errorMsg.innerText = data.message || "Could not fetch video. Check your link.";
@@ -237,29 +253,6 @@
                 loading.style.display = "none";
                 errorMsg.innerText = "Connection error. Please try again!";
                 errorMsg.style.display = "block";
-            }
-        }
-
-        // Function to force direct download without opening in a new tab
-        async function forceDownload(videoUrl) {
-            try {
-                const response = await fetch(videoUrl);
-                const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = blobUrl;
-                a.download = 'pinterest-video.mp4';
-                
-                document.body.appendChild(a);
-                a.click();
-                
-                window.URL.revokeObjectURL(blobUrl);
-                document.body.removeChild(a);
-            } catch (e) {
-                // Fallback if browser blocks blob download
-                window.open(videoUrl, '_blank');
             }
         }
     </script>
