@@ -170,7 +170,7 @@
         </div>
 
         <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Paste Pinterest link here...">
+            <input type="text" id="urlInput" placeholder="Paste Pinterest link here (e.g. pin.it/...)">
             <button onclick="downloadVideo()">
                 <i class="fa-solid fa-download"></i> Download
             </button>
@@ -178,7 +178,7 @@
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching video from API...</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Processing Pinterest video...</p>
         </div>
 
         <div class="error-msg" id="errorMsg"></div>
@@ -214,24 +214,28 @@
             loading.style.display = "block";
 
             try {
-                // Correctly passing the url parameter to the Dark Shan API endpoint
-                const targetAPI = `https://api-dark-shan-yt.koyeb.app/download/pinterest?url=${encodeURIComponent(urlInput)}`;
-                const proxyURL = `https://api.allorigins.win/get?url=${encodeURIComponent(targetAPI)}`;
+                // Using a multi-fallback public extraction method to fetch Pinterest video source safely
+                const encodedUrl = encodeURIComponent(urlInput);
+                const fetchService = `https://api.allorigins.win/get?url=${encodedUrl}`;
                 
-                const response = await fetch(proxyURL);
-                const proxyData = await response.json();
-                
-                if (!proxyData.contents) {
-                    throw new Error("Failed to connect to API server.");
+                const response = await fetch(fetchService);
+                const resData = await response.json();
+
+                if (!resData.contents) {
+                    throw new Error("Invalid response");
                 }
 
-                const data = JSON.parse(proxyData.contents);
+                const htmlText = resData.contents;
+                
+                // Extracting direct mp4 link from Pinterest meta tags using Regex
+                const match = htmlText.match(/<meta property="og:video" content="([^"]+)">/) || 
+                              htmlText.match(/property="og:video:secure_url" content="([^"]+)"/) ||
+                              htmlText.match(/"contentUrl":"([^"]+\.mp4[^"]*)"/);
+
                 loading.style.display = "none";
 
-                // Extracting download link safely from typical API responses
-                const videoUrl = data.url || data.result || data.download || (data.data && (data.data.url || data.data.video));
-
-                if (videoUrl) {
+                if (match && match[1]) {
+                    let videoUrl = match[1].replace(/&amp;/g, '&');
                     downloadLinks.innerHTML = `
                         <a href="${videoUrl}" class="download-btn" target="_blank" download>
                             <i class="fa-solid fa-download"></i> Download Video (HD)
@@ -239,12 +243,12 @@
                     `;
                     resultBox.style.display = "block";
                 } else {
-                    errorMsg.innerText = data.message || "Could not fetch video. Please check if the API link is active.";
+                    errorMsg.innerText = "Could not find video in this link. Make sure it's a direct video pin!";
                     errorMsg.style.display = "block";
                 }
             } catch (error) {
                 loading.style.display = "none";
-                errorMsg.innerText = "Server connection error or API is currently down. Try again later!";
+                errorMsg.innerText = "Failed to process the link. Please check the URL and try again.";
                 errorMsg.style.display = "block";
             }
         }
