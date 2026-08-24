@@ -1,173 +1,435 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DG DOWNLOADER - Pinterest Video Downloader</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DG Downloader — Pinterest Video Saver</title>
+
+    <!-- Font Awesome 6 (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Google Font: Inter for modern, clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+
     <style>
+        /* ---------- RESET & BASE ---------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
-            color: #fff;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            background: #0b0d15;
+            background-image:
+                radial-gradient(ellipse at 10% 20%, rgba(120, 60, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(255, 60, 120, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 200, 255, 0.05) 0%, transparent 70%);
+            padding: 20px;
         }
 
+        /* ---------- MAIN CARD (glass) ---------- */
         .container {
-            max-width: 700px;
-            margin: 50px auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            max-width: 720px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 44px 40px 36px;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* subtle animated glow orbs inside card */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(140, 80, 255, 0.20) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -15%;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255, 80, 160, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 14s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatOrb {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(30px, -20px) scale(1.2);
+            }
+        }
+
+        .container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---------- LOGO / HEADER ---------- */
+        .logo {
             text-align: center;
-            width: 90%;
+            margin-bottom: 32px;
         }
 
         .logo h1 {
-            font-size: 2.5rem;
-            color: #e60023;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f0eaff 0%, #c4b5ff 50%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            text-shadow: 0 0 40px rgba(167, 139, 250, 0.15);
         }
 
         .logo h1 span {
-            color: #fff;
+            font-weight: 300;
+            background: linear-gradient(135deg, #a78bfa, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 0.65em;
+            letter-spacing: 1px;
         }
 
         .logo p {
-            color: #ddd;
+            color: rgba(255, 255, 255, 0.50);
             font-size: 0.95rem;
-            margin-bottom: 30px;
+            margin-top: 10px;
+            font-weight: 400;
+            letter-spacing: 0.2px;
         }
 
+        /* ---------- INPUT GROUP ---------- */
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 60px;
+            padding: 5px 5px 5px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group:focus-within {
+            border-color: rgba(167, 139, 250, 0.4);
+            box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.08), inset 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .input-group input {
             flex: 1;
-            padding: 15px 20px;
+            padding: 14px 0;
+            background: transparent;
             border: none;
             outline: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            color: #f0edff;
             font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            min-width: 0;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+            font-weight: 400;
+            letter-spacing: 0.2px;
         }
 
         .input-group button {
-            padding: 0 25px;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
             border: none;
-            outline: none;
-            background: #e60023;
+            border-radius: 60px;
             color: #fff;
             font-weight: 600;
-            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.30);
+            white-space: nowrap;
+        }
+
+        .input-group button i {
             font-size: 1rem;
         }
 
         .input-group button:hover {
-            background: #ad081b;
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(124, 58, 237, 0.45);
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         }
 
+        .input-group button:active {
+            transform: scale(0.96);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+        }
+
+        /* ---------- LOADING ---------- */
         .loading {
             display: none;
-            margin: 20px 0;
+            text-align: center;
+            padding: 24px 0 16px;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid #e60023;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
             margin: 0 auto;
+            border: 3px solid rgba(167, 139, 250, 0.12);
+            border-top: 3px solid #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
+        .loading p {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.85rem;
+            margin-top: 14px;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        /* ---------- ERROR ---------- */
+        .error-msg {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.12);
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: none;
+            margin: 8px 0 4px;
+            text-align: center;
+        }
+
+        /* ---------- RESULT BOX ---------- */
         .result-box {
             display: none;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            text-align: left;
+            margin-top: 28px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 24px 24px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeUp 0.5s ease;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-box h3 {
+            color: rgba(255, 255, 255, 0.70);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .result-box h3 i {
+            color: #34d399;
+            font-size: 1.1rem;
         }
 
         .quality-options {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-top: 15px;
         }
 
         .download-btn {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            width: 100%;
-            padding: 12px 20px;
-            background: #28a745;
-            color: white;
-            text-align: center;
+            justify-content: space-between;
+            padding: 14px 20px 14px 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e8e4ff;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: 0.3s;
-            border: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
             cursor: pointer;
-            font-size: 1rem;
         }
 
         .download-btn:hover {
-            background: #218838;
+            background: rgba(167, 139, 250, 0.10);
+            border-color: rgba(167, 139, 250, 0.20);
+            transform: translateX(4px);
         }
 
-        .error-msg {
-            color: #ff6b6b;
-            margin-top: 15px;
-            font-weight: 500;
-            display: none;
+        .download-btn span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        footer {
+        .download-btn span:first-child i {
+            color: #a78bfa;
+            font-size: 1rem;
+            width: 20px;
             text-align: center;
-            padding: 20px;
-            color: #aaa;
-            font-size: 0.85rem;
-            background: rgba(0, 0, 0, 0.2);
         }
 
+        .download-btn span:last-child {
+            background: rgba(167, 139, 250, 0.12);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #c4b5ff;
+            letter-spacing: 0.3px;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        .download-btn:hover span:last-child {
+            background: rgba(167, 139, 250, 0.22);
+            color: #ede9fe;
+        }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            margin-top: 32px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            padding: 8px 0;
+        }
+
+        footer p {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
         @media (max-width: 576px) {
+            .container {
+                padding: 30px 20px 28px;
+                border-radius: 28px;
+            }
+
+            .logo h1 {
+                font-size: 2rem;
+            }
+
             .input-group {
                 flex-direction: column;
+                background: transparent;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                gap: 12px;
+                border-radius: 0;
             }
+
+            .input-group input {
+                background: rgba(255, 255, 255, 0.04);
+                padding: 16px 20px;
+                border-radius: 60px;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                font-size: 0.95rem;
+            }
+
+            .input-group input:focus {
+                border-color: rgba(167, 139, 250, 0.3);
+                box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.06);
+            }
+
             .input-group button {
-                padding: 15px;
+                justify-content: center;
+                padding: 16px 20px;
+                font-size: 0.95rem;
+                border-radius: 60px;
+                width: 100%;
+            }
+
+            .result-box {
+                padding: 18px 16px 14px;
+            }
+
+            .download-btn {
+                padding: 12px 16px 12px 18px;
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .download-btn span:last-child {
+                padding: 4px 14px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 22px 14px 20px;
+            }
+            .logo h1 {
+                font-size: 1.6rem;
+            }
+            .logo p {
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -175,36 +437,42 @@
 <body>
 
     <div class="container">
+        <!-- Header -->
         <div class="logo">
             <h1>DG <span>DOWNLOADER</span></h1>
-            <p>Paste your Pinterest video link below and download instantly!</p>
+            <p><i class="fa-regular fa-circle-play" style="margin-right: 6px; opacity: 0.6;"></i> Paste your Pinterest video link &amp; download instantly</p>
         </div>
 
+        <!-- Input -->
         <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Paste Pinterest link here...">
+            <input type="text" id="urlInput" placeholder="Paste Pinterest link here…" />
             <button onclick="downloadVideo()">
                 <i class="fa-solid fa-download"></i> Download
             </button>
         </div>
 
+        <!-- Loading -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Fetching video qualities...</p>
+            <p>Fetching video qualities…</p>
         </div>
 
+        <!-- Error -->
         <div class="error-msg" id="errorMsg"></div>
 
+        <!-- Result -->
         <div class="result-box" id="resultBox">
-            <h3><i class="fa-solid fa-circle-check" style="color: #28a745;"></i> Select Quality to Download:</h3>
+            <h3><i class="fa-regular fa-circle-check"></i> Select quality to download</h3>
             <div class="quality-options" id="qualityOptions"></div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 DG DOWNLOADER. All Rights Reserved.</p>
+        <p>&copy; 2026 DG DOWNLOADER &mdash; All rights reserved.</p>
     </footer>
 
     <script>
+        // ─── KEEP YOUR EXACT API / DOWNLOAD LOGIC ───────────────────────
         async function downloadVideo() {
             const urlInput = document.getElementById('urlInput').value.trim();
             const loading = document.getElementById('loading');
@@ -225,7 +493,8 @@
             loading.style.display = "block";
 
             try {
-                const apiURL = `https://dg-pinterest-api.onrender.com/api/pinterest?url=${encodeURIComponent(urlInput)}`;
+                const apiURL =
+                    `https://dg-pinterest-api.onrender.com/api/pinterest?url=${encodeURIComponent(urlInput)}`;
                 const response = await fetch(apiURL);
                 const data = await response.json();
 
@@ -234,14 +503,14 @@
                 if (data.status && data.qualities) {
                     let htmlContent = '';
                     for (const [quality, videoUrl] of Object.entries(data.qualities)) {
-                        // Route through our Render download proxy to force direct file download
-                        const proxyUrl = `https://dg-pinterest-api.onrender.com/api/download-proxy?url=${encodeURIComponent(videoUrl)}`;
+                        const proxyUrl =
+                            `https://dg-pinterest-api.onrender.com/api/download-proxy?url=${encodeURIComponent(videoUrl)}`;
                         htmlContent += `
-                            <a href="${proxyUrl}" class="download-btn" download="DG-Pinterest.mp4">
-                                <span><i class="fa-solid fa-video"></i> ${quality}</span>
-                                <span><i class="fa-solid fa-download"></i> Download</span>
-                            </a>
-                        `;
+                                <a href="${proxyUrl}" class="download-btn" download="DG-Pinterest.mp4">
+                                    <span><i class="fa-solid fa-video"></i> ${quality}</span>
+                                    <span><i class="fa-solid fa-download"></i> Download</span>
+                                </a>
+                            `;
                     }
                     qualityOptions.innerHTML = htmlContent;
                     resultBox.style.display = "block";
@@ -256,5 +525,6 @@
             }
         }
     </script>
+
 </body>
 </html>
